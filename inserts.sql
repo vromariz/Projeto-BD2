@@ -137,7 +137,7 @@ INSERT INTO produto (id, nome, descricao, quantidade_estoque, valor, observacoes
 (13, 'Enfeite Castelo', 'Produto para aquarismo', 33, 177.50, 'Produto cadastrado inicialmente', 3),
 (14, 'Compressor de Ar', 'Produto para aquarismo', 34, 190.00, 'Produto cadastrado inicialmente', 4),
 (15, 'Mangueira Silicone', 'Produto para aquarismo', 35, 202.50, 'Produto cadastrado inicialmente', 5),
-(16, 'Pedra Porosa', 'Produto para aquarismo', 36, 215.00, 'Produto cadastrado inicialmente', 1),
+(16, 'Pedra', 'Produto para aquarismo', 36, 215.00, 'Produto cadastrado inicialmente', 1),
 (17, 'Aquario 80L', 'Produto para aquarismo', 37, 227.50, 'Produto cadastrado inicialmente', 2),
 (18, 'Racao Betta', 'Produto para aquarismo', 38, 240.00, 'Produto cadastrado inicialmente', 3),
 (19, 'Filtro Interno', 'Produto para aquarismo', 39, 252.50, 'Produto cadastrado inicialmente', 4),
