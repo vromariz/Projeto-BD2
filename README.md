@@ -3,6 +3,12 @@
 Este projeto usa MariaDB como SGBD e Python como linguagem de apoio.
 Os arquivos `schema.sql`, `inserts.sql`, `views.sql` e `drop.sql` usam SQL simples e portável sempre que possível.
 
+## Tecnologias Utilizadas (Tech Stack)
+
+* **Python 3**: Linguagem de programação principal utilizada para a lógica da aplicação e interface via linha de comando.
+* **MariaDB**: Sistema de Gerenciamento de Banco de Dados Relacional (SGBD) para armazenamento e consulta dos dados do e-commerce.
+* **mysql-connector-python**: Biblioteca/driver do Python utilizado para realizar a conexão e executar os comandos SQL no MariaDB.
+
 ## Instalação no Linux
 
 ```bash
