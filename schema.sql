@@ -96,3 +96,11 @@ CREATE TABLE premio_cliente (
     PRIMARY KEY (id),
     FOREIGN KEY (id_cliente) REFERENCES cliente(id)
 );
+
+CREATE TABLE mensagem_trigger (
+    id INTEGER NOT NULL AUTO_INCREMENT,
+    mensagem VARCHAR(500) NOT NULL,
+    data_mensagem DATE NOT NULL,
+    hora_mensagem TIME NOT NULL,
+    PRIMARY KEY (id)
+);

@@ -1,6 +1,3 @@
--- Execute este arquivo como root no MariaDB depois de criar o banco.
--- Ajuste as senhas se desejar.
-
 CREATE USER IF NOT EXISTS 'admin_ecommerce'@'localhost' IDENTIFIED BY 'admin123';
 CREATE USER IF NOT EXISTS 'gerente_ecommerce'@'localhost' IDENTIFIED BY 'gerente123';
 CREATE USER IF NOT EXISTS 'funcionario_ecommerce'@'localhost' IDENTIFIED BY 'func123';

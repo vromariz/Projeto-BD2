@@ -39,21 +39,24 @@ def cadastrar_produto(nome, descricao, estoque, valor, observacoes, id_vendedor)
         conn.close()
 
 
-def realizar_venda(id_cliente, id_produto, quantidade, id_transportadora, endereco, valor_transporte):
+def mostrar_mensagens_trigger(conn, id_inicial):
+    mensagens = executar_sql(conn, """
+        SELECT id, mensagem
+        FROM mensagem_trigger
+        WHERE id > %s
+        ORDER BY id
+    """, (id_inicial,), fetch=True)
+    for item in mensagens:
+        print(item['mensagem'])
+
+
+def realizar_venda(id_cliente, itens, id_transportadora, endereco, valor_transporte):
     conn = conectar()
     try:
-        produto = executar_sql(
-            conn,
-            "SELECT id, valor, quantidade_estoque, id_vendedor FROM produto WHERE id = %s",
-            (id_produto,),
-            fetch=True
-        )
-        if not produto:
-            print("Produto não encontrado.")
-            return
-        produto = produto[0]
-        if produto['quantidade_estoque'] < quantidade:
-            print("Estoque insuficiente.")
+        ultima_msg = executar_sql(conn, "SELECT COALESCE(MAX(id), 0) AS id FROM mensagem_trigger", fetch=True)[0]['id']
+
+        if not itens:
+            print("Venda cancelada: nenhum produto foi informado.")
             return
 
         id_venda = proximo_id(conn, 'venda')
@@ -65,60 +68,58 @@ def realizar_venda(id_cliente, id_produto, quantidade, id_transportadora, endere
             VALUES (%s, %s, %s, %s, %s)
         """, (id_venda, id_cliente, id_transportadora, hoje, agora))
 
-        executar_sql(conn, """
-            INSERT INTO item_venda (id_venda, id_produto, quantidade, valor_unitario)
-            VALUES (%s, %s, %s, %s)
-        """, (id_venda, id_produto, quantidade, produto['valor']))
+        total_venda = 0.0
+
+        for item in itens:
+            id_produto = item['id_produto']
+            quantidade = item['quantidade']
+
+            produto = executar_sql(
+                conn,
+                "SELECT id, nome, valor, quantidade_estoque FROM produto WHERE id = %s",
+                (id_produto,),
+                fetch=True
+            )
+
+            if not produto:
+                raise Exception(f"Produto {id_produto} não encontrado.")
+
+            produto = produto[0]
+
+            if int(produto['quantidade_estoque']) < quantidade:
+                raise Exception(f"Estoque insuficiente para o produto {produto['nome']}.")
+
+            executar_sql(conn, """
+                INSERT INTO item_venda (id_venda, id_produto, quantidade, valor_unitario)
+                VALUES (%s, %s, %s, %s)
+            """, (id_venda, id_produto, quantidade, produto['valor']))
+
+            executar_sql(conn, """
+                UPDATE produto
+                SET quantidade_estoque = quantidade_estoque - %s
+                WHERE id = %s
+            """, (quantidade, id_produto))
+
+            total_venda += float(produto['valor']) * quantidade
 
         executar_sql(conn, """
             INSERT INTO transporte_venda (id_venda, endereco_destino, valor_cobrado)
             VALUES (%s, %s, %s)
         """, (id_venda, endereco, valor_transporte))
 
-        executar_sql(conn, """
-            UPDATE produto
-            SET quantidade_estoque = quantidade_estoque - %s
-            WHERE id = %s
-        """, (quantidade, id_produto))
-
-        total_venda = float(produto['valor']) * quantidade
-
-        if total_venda > 500:
-            cashback = total_venda * 0.02
-            existente = executar_sql(conn, "SELECT id_cliente FROM cliente_especial WHERE id_cliente = %s", (id_cliente,), fetch=True)
-            if existente:
-                executar_sql(conn, "UPDATE cliente_especial SET cashback = cashback + %s WHERE id_cliente = %s", (cashback, id_cliente))
-            else:
-                executar_sql(conn, "INSERT INTO cliente_especial (id_cliente, cashback) VALUES (%s, %s)", (id_cliente, cashback))
-            total_cashback = executar_sql(conn, "SELECT COALESCE(SUM(cashback), 0) AS total FROM cliente_especial", fetch=True)[0]['total']
-            print(f"Trigger simulada: cliente especial atualizado. Caixa necessário para cashback: R$ {float(total_cashback):.2f}")
-
-        id_vendedor = produto['id_vendedor']
-        total_vendedor = executar_sql(conn, """
-            SELECT COALESCE(SUM(iv.quantidade * iv.valor_unitario), 0) AS total
-            FROM item_venda iv
-            JOIN produto p ON iv.id_produto = p.id
-            WHERE p.id_vendedor = %s
-        """, (id_vendedor,), fetch=True)[0]['total']
-
-        if float(total_vendedor) > 1000:
-            bonus = float(total_vendedor) * 0.05
-            existente = executar_sql(conn, "SELECT id_vendedor FROM funcionario_especial WHERE id_vendedor = %s", (id_vendedor,), fetch=True)
-            if existente:
-                executar_sql(conn, "UPDATE funcionario_especial SET bonus = %s WHERE id_vendedor = %s", (bonus, id_vendedor))
-            else:
-                executar_sql(conn, "INSERT INTO funcionario_especial (id_vendedor, bonus) VALUES (%s, %s)", (id_vendedor, bonus))
-            total_bonus = executar_sql(conn, "SELECT COALESCE(SUM(bonus), 0) AS total FROM funcionario_especial", fetch=True)[0]['total']
-            print(f"Trigger simulada: vendedor especial atualizado. Bônus salarial total necessário: R$ {float(total_bonus):.2f}")
-
         conn.commit()
-        print(f"Venda {id_venda} realizada. Total dos produtos: R$ {total_venda:.2f}")
+
+        print(f"Venda {id_venda} realizada em {hoje} às {agora}.")
+        print(f"Total dos produtos: R$ {total_venda:.2f}")
+        print(f"Valor do transporte: R$ {float(valor_transporte):.2f}")
+        print(f"Total geral: R$ {total_venda + float(valor_transporte):.2f}")
+        mostrar_mensagens_trigger(conn, ultima_msg)
+
     except Exception as erro:
         conn.rollback()
-        print(f"Erro na venda: {erro}")
+        print(f"Venda cancelada. Erro: {erro}")
     finally:
         conn.close()
-
 
 def reajuste_salario(percentual, id_cargo):
     conn = conectar()
@@ -219,9 +220,12 @@ def exibir_views():
 def zerar_cashback(id_cliente):
     conn = conectar()
     try:
+        ultima_msg = executar_sql(conn, "SELECT COALESCE(MAX(id), 0) AS id FROM mensagem_trigger", fetch=True)[0]['id']
         executar_sql(conn, "UPDATE cliente_especial SET cashback = 0 WHERE id_cliente = %s", (id_cliente,))
+        mostrar_mensagens_trigger(conn, ultima_msg)
+
         executar_sql(conn, "DELETE FROM cliente_especial WHERE id_cliente = %s AND cashback = 0", (id_cliente,))
         conn.commit()
-        print("Cashback zerado. Trigger simulada: cliente removido de cliente_especial se cashback ficou igual a zero.")
+        print("Cliente removido da tabela cliente_especial se o cashback ficou zerado.")
     finally:
         conn.close()
