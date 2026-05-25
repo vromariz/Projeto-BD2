@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>E-commerce Aquarismo</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>E-commerce Aquarismo</h1>
+
+    <div class="container">
+
+        <section>
+            <h2>Banco de Dados</h2>
+            <button onclick="criarBanco()">Criar Banco</button>
+            <button onclick="destruirBanco()" id="btnDestruir">Destruir Banco</button>
+        </section>
+
+        <section>
+            <h2>Cadastrar Cliente</h2>
+            <input type="text" id="clienteNome" placeholder="Nome">
+            <input type="number" id="clienteIdade" placeholder="Idade">
+            <input type="text" id="clienteSexo" placeholder="Sexo (M/F)">
+            <input type="date" id="clienteNascimento">
+            <button onclick="cadastrarCliente()">Cadastrar Cliente</button>
+        </section>
+
+        <section>
+            <h2>Cadastrar Produto</h2>
+            <input type="text" id="produtoNome" placeholder="Nome">
+            <input type="text" id="produtoDescricao" placeholder="Descrição">
+            <input type="number" id="produtoEstoque" placeholder="Estoque">
+            <input type="number" step="0.01" id="produtoValor" placeholder="Valor">
+            <input type="text" id="produtoObservacoes" placeholder="Observações">
+            <input type="number" id="produtoVendedor" placeholder="ID do vendedor">
+            <button onclick="cadastrarProduto()">Cadastrar Produto</button>
+        </section>
+
+       <section>
+            <h2>Realizar Venda</h2>
+            <input type="number" id="vendaIdCliente" placeholder="ID do cliente">
+            <input type="number" id="vendaIdTransportadora" placeholder="ID da transportadora">
+            <input type="text" id="vendaEndereco" placeholder="Endereço de destino">
+            <input type="number" step="0.01" id="vendaValorTransporte" placeholder="Valor do transporte">
+
+            <button onclick="carregarProdutos()">Carregar Produtos</button>
+
+            <div id="listaProdutos"></div>
+
+            <button onclick="realizarVenda()">Confirmar Venda</button>
+        </section>
+
+        <section>
+            <h2>Reajuste de Salário</h2>
+            <input type="number" step="0.01" id="reajustePercentual" placeholder="Percentual de reajuste (%)">
+            <input type="number" id="reajusteIdCargo" placeholder="ID do cargo">
+            <button onclick="reajustarSalario()">Aplicar Reajuste</button>
+        </section>
+
+        <section>
+            <h2>Sorteio de Cliente</h2>
+            <button onclick="sortearCliente()">Sortear Cliente</button>
+        </section>
+
+        <section>
+            <h2>Estatísticas de Vendas</h2>
+            <button onclick="verEstatisticas()">Ver Estatísticas</button>
+            <div id="estatisticasResultado"></div>
+        </section>
+
+        <div id="resultado"></div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+</html>
