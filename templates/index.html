@@ -75,5 +75,79 @@
 
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 
+    <canvas id="aquario" style="position:fixed; top:0; left:0; z-index:0; pointer-events:none;"></canvas>
+
+    <script>
+            const canvas = document.getElementById('aquario');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+
+            const peixes = Array.from({ length: 15 }, () => ({
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                velocidade: 0.5 + Math.random() * 1.5,
+                tamanho: 15 + Math.random() * 20,
+                cor: ['#ff6f61', '#ffd700', '#00bcd4', '#ff8c00', '#ffffff'][Math.floor(Math.random() * 5)],
+                direcao: Math.random() > 0.5 ? 1 : -1
+            }));
+
+            function desenharPeixe(x, y, tamanho, cor, direcao) {
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.scale(direcao, 1);
+                ctx.fillStyle = cor;
+                ctx.globalAlpha = 0.6;
+
+                ctx.beginPath();
+                ctx.ellipse(0, 0, tamanho, tamanho / 2, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(-tamanho, 0);
+                ctx.lineTo(-tamanho - tamanho / 2, -tamanho / 2);
+                ctx.lineTo(-tamanho - tamanho / 2, tamanho / 2);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#000';
+                ctx.globalAlpha = 0.8;
+                ctx.beginPath();
+                ctx.arc(tamanho / 2, -tamanho / 6, tamanho / 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            function animar() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                peixes.forEach(p => {
+                    p.x += p.velocidade * p.direcao;
+
+                    if (p.x > canvas.width + 50) {
+                        p.x = -50;
+                        p.y = Math.random() * canvas.height;
+                    }
+                    if (p.x < -50) {
+                        p.x = canvas.width + 50;
+                        p.y = Math.random() * canvas.height;
+                    }
+
+                    desenharPeixe(p.x, p.y, p.tamanho, p.cor, p.direcao);
+                });
+
+                requestAnimationFrame(animar);
+            }
+
+            animar();
+        </script>
+
 </body>
 </html>
