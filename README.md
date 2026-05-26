@@ -1,71 +1,71 @@
-# Projeto BDII - E-commerce de Aquarismo com MariaDB + Python
+# AquaCommerce - Sistema de E-commerce para Aquarismo
 
-Este projeto usa MariaDB como SGBD e Python como linguagem de apoio.
-Os arquivos `schema.sql`, `inserts.sql`, `views.sql` e `drop.sql` usam SQL simples e portável sempre que possível.
+## Sobre o Projeto
 
-## Tecnologias Utilizadas (Tech Stack)
+O  sistema é um e-commerce voltado para o segmento de aquarismo, desenvolvido como projeto acadêmico da disciplina de Banco de Dados.
 
-* **Python 3**: Linguagem de programação principal utilizada para a lógica da aplicação e interface via linha de comando.
-* **MariaDB**: Sistema de Gerenciamento de Banco de Dados Relacional (SGBD) para armazenamento e consulta dos dados do e-commerce.
-* **mysql-connector-python**: Biblioteca/driver do Python utilizado para realizar a conexão e executar os comandos SQL no MariaDB.
+O sistema foi projetado para auxiliar no gerenciamento de uma loja especializada em produtos para aquários, permitindo o controle de clientes, produtos, pedidos, estoque e funcionários, além de implementar recursos de banco de dados como triggers, procedures e views.
 
-## Instalação no Linux
+---
 
-```bash
-sudo apt update
-sudo apt install mariadb-server python3-pip
-pip install mysql-connector-python
-sudo systemctl start mariadb
-```
+## Objetivos
 
-## Executar
+- Desenvolver um banco de dados relacional para um sistema de e-commerce.
+- Aplicar conceitos de modelagem entidade-relacionamento (MER).
+- Implementar integridade referencial entre tabelas.
+- Automatizar operações utilizando Triggers e Procedures.
+- Criar Views para facilitar consultas e relatórios.
+- Simular um ambiente real de gerenciamento de uma loja de aquarismo.
 
-Entre na pasta do projeto e rode:
+---
 
-```bash
-python3 main.py
-```
+## Funcionalidades
 
-No menu, escolha primeiro:
+### Clientes
+- Cadastro de clientes
+- Consulta de informações
+- Histórico de pedidos
 
-```text
-1 - Criar banco de dados
-```
+### Produtos
+- Cadastro de peixes ornamentais
+- Cadastro de rações
+- Cadastro de aquários
+- Cadastro de acessórios
+- Controle de estoque
 
-Depois disso, use as opções de venda, views, sorteio e estatísticas.
+### Pedidos
+- Registro de pedidos
+- Associação entre cliente e produtos
+- Controle de quantidade
+- Atualização automática de estoque
 
-## Caso dê erro de permissão com root
+### Funcionários
+- Controle de cargos
+- Gerenciamento administrativo
 
-Entre no MariaDB:
+---
 
-```bash
-sudo mariadb
-```
+## Estrutura do Banco de Dados
 
-Crie um usuário para o Python:
+O banco é composto por entidades relacionadas ao contexto de e-commerce de aquarismo, incluindo:
 
-```sql
-CREATE USER IF NOT EXISTS 'vinicius'@'localhost' IDENTIFIED BY '1234';
-GRANT ALL PRIVILEGES ON *.* TO 'vinicius'@'localhost';
-FLUSH PRIVILEGES;
-```
+- Clientes
+- Produtos
+- Categorias
+- Pedidos
+- Itens do Pedido
+- Funcionários
+- Cargos
+- Estoque
 
-Depois rode o programa assim:
+As tabelas possuem relacionamentos baseados em chaves primárias (PK) e  chaves estrangeiras (FK), garantindo integridade e consistência dos dados.
 
-```bash
-MYSQL_USER=vinicius MYSQL_PASSWORD=1234 python3 main.py
-```
+---
 
-## Usuários exigidos pelo trabalho
+## Tecnologias Utilizadas
 
-Após criar o banco pelo menu, execute:
-
-```bash
-sudo mariadb < users.sql
-```
-
-## Observação importante
-
-SQL ANSI puro não é um SGBD. ANSI SQL é o padrão da linguagem SQL.
-Como o trabalho precisa executar os comandos em algum banco, foi usado MariaDB.
-Triggers, procedures e usuários são recursos que variam entre SGBDs; por isso o projeto deixa as regras principais implementadas no Python e também inclui um arquivo opcional `procedures_triggers.sql` para MariaDB.
+- SQL
+- Python
+- Flask
+- HTML5
+- CSS3
